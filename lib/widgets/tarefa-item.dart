@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class TarefaItem extends StatefulWidget {
-
   final Tarefa tarefa;
 
   TarefaItem(this.tarefa);
@@ -15,10 +14,8 @@ class TarefaItem extends StatefulWidget {
 }
 
 class _TarefaItemState extends State<TarefaItem> {
-
   void setConcluida(bool value) async {
-   
-    setState(() { 
+    setState(() {
       this.widget.tarefa.concluida = value;
     });
 
@@ -30,13 +27,12 @@ class _TarefaItemState extends State<TarefaItem> {
     String token = prefs.getString('token');
 
     await http.put(
-      'https://tarefas-api.herokuapp.com/tarefa/${widget.tarefa.id}',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ' + token
-      },
-      body: convert.jsonEncode(widget.tarefa.toJson())
-    );
+        'https://tarefas-api.herokuapp.com/tarefa/${widget.tarefa.id}',
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ' + token
+        },
+        body: convert.jsonEncode(widget.tarefa.toJson()));
   }
 
   @override
