@@ -1,14 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class CadastroPage extends StatelessWidget {
 
   var _formKey = GlobalKey<FormState>();
+  var _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Future<bool> create() async { 
+    var preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString('token');
+
+    var response = await http.post('https://tarefas-api.herokuapp.com/tarefa',
+      body: jsonEncode({'nome' : nome}),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization' : 'Bearer $token'
+      }
+    );
+
+    return response.statusCode == 200 ? true : false;
+  }
 
   String nome;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Nova Tarefa"),
       ),
@@ -34,11 +54,16 @@ class CadastroPage extends StatelessWidget {
                 textTheme: ButtonTextTheme.primary,
                 child: RaisedButton(
                   child: Text("Salvar"),
-                  onPressed: () {
+                  onPressed: () async {
                     if(_formKey.currentState.validate()) {
                       _formKey.currentState.save();
-                      //TODO: Salvar dados na API
-                      Navigator.of(context).pop();
+                      if(await create())
+                        Navigator.of(context).pop();
+                      else
+                        _scaffoldKey.currentState.showSnackBar(SnackBar(
+                          content: Text("Falha ao cadastrar"),
+                          backgroundColor: Colors.red,                          
+                        ));
                     }
                   },
                 ),
